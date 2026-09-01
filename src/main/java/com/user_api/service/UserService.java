@@ -1,6 +1,9 @@
 package com.user_api.service;
 
+import com.user_api.dto.UserRequestDto;
+import com.user_api.dto.UserResponseDto;
 import com.user_api.entity.User;
+import com.user_api.mapper.UserMapper;
 import com.user_api.repository.UserRepository;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -17,23 +20,36 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    public User create(User user) {
-        if (userRepository.existsByEmail(user.getEmail())) {
+
+
+    public UserResponseDto create(UserRequestDto dto) {
+        if (userRepository.existsByEmail(dto.email())) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Email ja cadastrado");
         }
+        User novoUser = new User();
 
-        user.setCreatedAt(LocalDateTime.now());
-        user.setActive(true);
-        return userRepository.save(user);
+        novoUser.setName(dto.name());
+        novoUser.setEmail(dto.email());
+        novoUser.setPassword(dto.password());
+        novoUser.setCpf(dto.cpf());
+        novoUser.setCreatedAt(LocalDateTime.now());
+        novoUser.setActive(true);
+
+        User us = userRepository.save(novoUser);
+
+        return UserMapper.toResponseDto(us);
     }
 
-    public List<User> findAll() {
-        return userRepository.findAll();
+    public List<UserResponseDto> findAll() {
+        return userRepository.findAll().stream()
+                .map((user -> UserMapper.toResponseDto(user)))
+                .toList();
     }
 
-    public User findById(Long id) {
-        return userRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND, "Usuario nao encontrado"));
+    public UserResponseDto findById(Long id) {
+        User us = userRepository.findById(id).orElseThrow(() -> new ResponseStatusException(
+                HttpStatus.NOT_FOUND, "Usuario nao encontrado"));
+        return UserMapper.toResponseDto(us);
+
     }
 }
