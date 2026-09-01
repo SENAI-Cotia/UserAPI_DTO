@@ -1,5 +1,7 @@
 package com.user_api.service;
 
+import com.user_api.dto.UserRequestDTO;
+import com.user_api.dto.UserResponseDTO;
 import com.user_api.entity.User;
 import com.user_api.repository.UserRepository;
 import java.time.LocalDateTime;
@@ -17,23 +19,43 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    public User create(User user) {
-        if (userRepository.existsByEmail(user.getEmail())) {
+    public UserResponseDTO create(UserRequestDTO requestDTO) {
+        if (userRepository.existsByEmail(requestDTO.getEmail())) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Email ja cadastrado");
         }
 
+        User user = new User();
+        user.setName(requestDTO.getName());
+        user.setEmail(requestDTO.getEmail());
+        user.setPassword(requestDTO.getPassword());
+        user.setCpf(requestDTO.getCpf());
         user.setCreatedAt(LocalDateTime.now());
         user.setActive(true);
-        return userRepository.save(user);
+
+        User saved = userRepository.save(user);
+        return toResponseDTO(saved);
     }
 
-    public List<User> findAll() {
-        return userRepository.findAll();
+    public List<UserResponseDTO> findAll() {
+        return userRepository.findAll().stream()
+                .map(this::toResponseDTO)
+                .toList();
     }
 
-    public User findById(Long id) {
-        return userRepository.findById(id)
+    public UserResponseDTO findById(Long id) {
+        User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND, "Usuario nao encontrado"));
+        return toResponseDTO(user);
+    }
+
+    private UserResponseDTO toResponseDTO(User user) {
+        return new UserResponseDTO(
+                user.getId(),
+                user.getName(),
+                user.getEmail(),
+                user.getCreatedAt(),
+                user.getActive()
+        );
     }
 }
