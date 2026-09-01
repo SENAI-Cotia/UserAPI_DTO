@@ -1,5 +1,6 @@
 package com.user_api.entity;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -30,15 +31,19 @@ public class User {
     @Column(nullable = false, unique = true)
     private String email;
 
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Column(nullable = false)
     private String password;
 
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @Column(nullable = false, length = 11)
     private String cpf;
 
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     @Column(nullable = false)
     private Boolean active;
 }
