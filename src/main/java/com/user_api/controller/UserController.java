@@ -1,15 +1,19 @@
 package com.user_api.controller;
 
+import com.user_api.dto.UserRequestDTO;
+import com.user_api.dto.UserResponseDTO;
 import com.user_api.entity.User;
+import com.user_api.mapper.UserMapper;
 import com.user_api.service.UserService;
 import java.util.List;
+
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -23,17 +27,18 @@ public class UserController {
     }
 
     @PostMapping
-    public User create(@RequestBody User user) {
-        return userService.create(user);
+    public ResponseEntity<UserResponseDTO> create(@RequestBody UserRequestDTO dto) {
+        User user = userService.create(dto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(UserMapper.toResponseDTO(user));
     }
 
     @GetMapping
-    public List<User> findAll() {
-        return userService.findAll();
+    public ResponseEntity<List<UserResponseDTO>> findAll() {
+        return ResponseEntity.ok(userService.findAll());
     }
 
     @GetMapping("/{id}")
-    public User findById(@PathVariable Long id) {
-        return userService.findById(id);
+    public ResponseEntity<UserResponseDTO> findById(@PathVariable Long id) {
+        return ResponseEntity.ok(userService.findById(id));
     }
 }
