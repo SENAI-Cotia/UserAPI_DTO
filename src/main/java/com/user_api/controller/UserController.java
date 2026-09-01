@@ -1,5 +1,7 @@
 package com.user_api.controller;
 
+import com.user_api.dto.UserRequestDto;
+import com.user_api.dto.UserResponseDto;
 import com.user_api.entity.User;
 import com.user_api.service.UserService;
 import java.util.List;
@@ -23,17 +25,18 @@ public class UserController {
     }
 
     @PostMapping
-    public User create(@RequestBody User user) {
-        return userService.create(user);
+    public UserResponseDto create(@RequestBody UserRequestDto user) {
+        UserResponseDto userResponseDto = userService.create(user);
+        return userResponseDto;
     }
 
     @GetMapping
-    public List<User> findAll() {
+    public List<UserResponseDto> findAll() {
         return userService.findAll();
     }
 
     @GetMapping("/{id}")
-    public User findById(@PathVariable Long id) {
+    public UserResponseDto findById(@PathVariable Long id) {
         return userService.findById(id);
     }
 }
