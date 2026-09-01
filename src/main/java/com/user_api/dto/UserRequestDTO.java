@@ -1,7 +1,6 @@
 package com.user_api.dto;
 
-public record userRequestDTO (
-    Long id,
+public record UserRequestDTO(
     String name,
     String email,
     String password,
